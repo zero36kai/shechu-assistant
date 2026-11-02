@@ -1,0 +1,12 @@
+.venv/
+.cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.hypothesis/
+data/
+*.log
+output/
+.env
+.env.*
+img-API.txt

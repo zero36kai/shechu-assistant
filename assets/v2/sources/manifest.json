@@ -1,0 +1,130 @@
+[
+  {
+    "id": "deepseek",
+    "url": "https://fisharchive.cc/character-art/v1/download/deepseek-chibi.webp",
+    "size": [
+      941,
+      1672
+    ],
+    "mode": "RGB",
+    "bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "sha256": "06c7985007ee2c71afa7b42ffceb822ddfdcdcb0b6588a3d78491e5fe6146b15"
+  },
+  {
+    "id": "chatgpt",
+    "url": "https://fisharchive.cc/character-art/v1/download/chatgpt-chibi.webp",
+    "size": [
+      941,
+      1672
+    ],
+    "mode": "RGB",
+    "bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "sha256": "af6fc2998cf4a1a3ed7235a489a1386398f42ee528e780e484da5d1e71f83815"
+  },
+  {
+    "id": "claude",
+    "url": "https://fisharchive.cc/character-art/v1/download/claude-chibi.webp",
+    "size": [
+      941,
+      1672
+    ],
+    "mode": "RGB",
+    "bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "sha256": "a87348fb857377439c527f81f42224c47e64fde77a918a97baaad5633c77aaec"
+  },
+  {
+    "id": "gemini",
+    "url": "https://fisharchive.cc/character-art/v1/download/gemini-chibi.webp",
+    "size": [
+      941,
+      1672
+    ],
+    "mode": "RGB",
+    "bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "sha256": "2ae32a919f25f35e7c6801f7ffb5a2cf9d3c6ee4b6f9b8289ddff79fe5cc342a"
+  },
+  {
+    "id": "glm",
+    "url": "https://fisharchive.cc/character-art/v1/download/glm-chibi.webp",
+    "size": [
+      941,
+      1672
+    ],
+    "mode": "RGB",
+    "bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "sha256": "1d4fd374e54d630d23d02c5c748ad9e1e35773b88f700250ef90ad056b02871f"
+  },
+  {
+    "id": "grok",
+    "url": "https://fisharchive.cc/character-art/v1/download/grok-chibi.webp",
+    "size": [
+      941,
+      1672
+    ],
+    "mode": "RGB",
+    "bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "sha256": "427065b199a57a574ac2befa46eb02c7dc7f6b2ef6ca1569bb899e867844780d"
+  },
+  {
+    "id": "kimi",
+    "url": "https://fisharchive.cc/character-art/v1/download/kimi-chibi.webp",
+    "size": [
+      941,
+      1672
+    ],
+    "mode": "RGB",
+    "bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "sha256": "d4d08b5f63be188addcf9b1fe29789b7900f6515647eaf7427c3ce64035ee51b"
+  },
+  {
+    "id": "qwen",
+    "url": "https://fisharchive.cc/character-art/v1/download/qwen-chibi.webp",
+    "size": [
+      941,
+      1672
+    ],
+    "mode": "RGB",
+    "bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "sha256": "e82ff0f5b8dd480069a8b0615c4b0fdbd82e1be6d7efd2a1d67d22b36c85cf6d"
+  }
+]

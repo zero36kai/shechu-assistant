@@ -1,0 +1,62 @@
+{
+  "states": {
+    "idle": {
+      "frames": [
+        "idle/00.png",
+        "idle/01.png",
+        "idle/02.png",
+        "idle/03.png"
+      ],
+      "durations": [
+        2200,
+        90,
+        100,
+        180
+      ]
+    },
+    "wave": {
+      "frames": [
+        "wave/00.png",
+        "wave/01.png",
+        "wave/02.png",
+        "wave/03.png"
+      ],
+      "durations": [
+        180,
+        180,
+        180,
+        180
+      ]
+    },
+    "water": {
+      "frames": [
+        "water/00.png",
+        "water/01.png",
+        "water/02.png",
+        "water/03.png"
+      ],
+      "durations": [
+        300,
+        400,
+        500,
+        300
+      ]
+    },
+    "stretch": {
+      "frames": [
+        "stretch/00.png",
+        "stretch/01.png",
+        "stretch/02.png",
+        "stretch/03.png"
+      ],
+      "durations": [
+        180,
+        180,
+        180,
+        180
+      ]
+    }
+  },
+  "task_id": 69429,
+  "source_sha256": "4c9e6e6c683e6bccd16c3422877aa0e94aeeef9e1c226ffe503d5d061b0dd303"
+}
