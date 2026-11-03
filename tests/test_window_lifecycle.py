@@ -4,9 +4,10 @@ from ctypes import wintypes
 import sys
 
 import pytest
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QPoint, QPointF, Qt
+from PySide6.QtGui import QWheelEvent
 from PySide6.QtTest import QTest
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QPushButton
 
 from water_assistant.app import Controller
 from water_assistant.config import Settings
@@ -48,7 +49,7 @@ def test_automatic_reminder_recovers_after_previous_window_was_minimized(control
 
 
 @pytest.mark.parametrize("maximized", [False, True])
-def test_history_button_restores_minimized_dashboard_without_recording(controller, maximized):
+def test_tray_history_restores_minimized_dashboard_without_recording(controller, maximized):
     controller.show_dashboard()
     if maximized:
         controller.dashboard.showMaximized()
@@ -57,7 +58,7 @@ def test_history_button_restores_minimized_dashboard_without_recording(controlle
     assert controller.dashboard.isMinimized()
     controller.show_reminder(manual=True)
     session = controller.cycle.session_id
-    QTest.mouseClick(controller.window.history_button, Qt.MouseButton.LeftButton)
+    next(action for action in controller.menu.actions() if action.text() == "历史记录").trigger()
     controller.application.processEvents()
     assert controller.dashboard.pages.currentIndex() == 1
     assert controller.dashboard.isVisible()
@@ -65,6 +66,59 @@ def test_history_button_restores_minimized_dashboard_without_recording(controlle
     assert controller.dashboard.isMaximized() == maximized
     assert controller.cycle.session_id == session
     assert controller.store.session_records(session) == {}
+
+
+@pytest.mark.parametrize("action", ["记录", "稍后"])
+@pytest.mark.parametrize("selected", [(), ("water",), ("kegel",), ("water", "kegel")])
+def test_reminder_actions_hide_without_opening_dashboard_or_adding_records(controller, action, selected):
+    controller.show_reminder(manual=True)
+    session = controller.cycle.session_id
+    for kind in selected:
+        widget = controller.window.water_button if kind == "water" else controller.window.kegel_button
+        QTest.mouseClick(widget, Qt.MouseButton.LeftButton)
+    records = controller.store.session_records(session)
+    assert set(records) == set(selected)
+    widget = next(button for button in controller.window.findChildren(QPushButton) if button.text() == action)
+    QTest.mouseClick(widget, Qt.MouseButton.LeftButton)
+    controller.application.processEvents()
+    assert not controller.window.isVisible()
+    assert not controller.cycle.visible
+    assert not controller.dashboard.isVisible()
+    assert controller.store.session_records(session) == records
+    if action == "记录":
+        assert controller.cycle.session_id is None
+        assert not controller.cycle.snoozed
+        assert controller.cycle.remaining == controller.settings.interval_minutes * 60
+    else:
+        assert controller.cycle.session_id == session
+        assert controller.cycle.snoozed
+        assert controller.cycle.remaining == controller.settings.snooze_minutes * 60
+        for _ in range(controller.settings.snooze_minutes * 60):
+            controller.now += 1
+            controller.tick()
+        assert controller.window.isVisible()
+        assert controller.window.records == records
+        assert controller.cycle.session_id == session
+        assert not controller.dashboard.isVisible()
+
+
+def test_size_is_saved_from_dashboard_and_wheel_leaves_it_unchanged(controller):
+    controller.show_reminder(manual=True)
+    controller.dashboard.height_slider.setValue(320)
+    controller.dashboard.height_slider.sliderReleased.emit()
+    assert controller.settings.pet_height == 320
+    saved, warning = Settings.load(controller.settings_path)
+    assert saved.pet_height == 320 and not warning
+    size = controller.window.size()
+    for delta in (120, -120):
+        event = QWheelEvent(QPointF(20, 20), QPointF(20, 20), QPoint(), QPoint(0, delta),
+                            Qt.MouseButton.NoButton, Qt.KeyboardModifier.NoModifier,
+                            Qt.ScrollPhase.NoScrollPhase, False)
+        QApplication.sendEvent(controller.window.character, event)
+        assert controller.settings.pet_height == 320
+        assert controller.window.size() == size
+    assert {widget.text() for widget in controller.window.findChildren(QPushButton)} == {
+        "喝好了", "提肛了", "记录", "稍后", "×"}
 
 
 def test_reminder_is_a_tool_window_and_dashboard_remains_a_regular_window(controller):

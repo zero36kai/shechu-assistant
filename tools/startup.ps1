@@ -24,14 +24,21 @@ if ($Action -eq 'Remove') {
 
 $pythonPath = Join-Path $projectRoot '.venv\Scripts\pythonw.exe'
 $entryPath = Join-Path $projectRoot 'run_v2.py'
-if (-not (Test-Path -LiteralPath $pythonPath) -or -not (Test-Path -LiteralPath $entryPath)) {
+$exePath = Join-Path $projectRoot 'ShechuAssistant.exe'
+if (Test-Path -LiteralPath $exePath) {
+    $targetPath = $exePath
+    $arguments = '--heartbeat'
+} elseif ((Test-Path -LiteralPath $pythonPath) -and (Test-Path -LiteralPath $entryPath)) {
+    $targetPath = $pythonPath
+    $arguments = '-B "{0}" --heartbeat' -f $entryPath
+} else {
     throw 'V2 环境或入口缺失，请先按 README.md 配置环境。'
 }
 
 $shell = New-Object -ComObject WScript.Shell
 $shortcut = $shell.CreateShortcut($shortcutPath)
-$shortcut.TargetPath = $pythonPath
-$shortcut.Arguments = '-B "{0}" --heartbeat' -f $entryPath
+$shortcut.TargetPath = $targetPath
+$shortcut.Arguments = $arguments
 $shortcut.WorkingDirectory = $projectRoot
 $shortcut.Description = '社畜小助手 · 60秒心跳保活'
 $shortcut.WindowStyle = 7

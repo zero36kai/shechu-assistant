@@ -32,7 +32,7 @@ def main():
         ("idle", {}, "两项可以分别打卡"),
         ("water", {"water": 1}, "喝水已记录"),
         ("idle", {"water": 1}, "另一项可以随后完成"),
-        ("stretch", {"water": 1, "kegel": 2}, "已分别保存，可随时关闭。"),
+        ("stretch", {"water": 1, "kegel": 2}, "两项已保存，点记录收起"),
     ):
         window.set_records(records)
         window.feedback.setText(message)

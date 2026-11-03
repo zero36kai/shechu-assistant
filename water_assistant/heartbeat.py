@@ -35,8 +35,9 @@ class Heartbeat:
             logging.warning("V2未回应心跳，现有实例仍持锁，下轮重试")
             return "unresponsive"
         lock.unlock()
-        command = [str(ROOT / ".venv/Scripts/pythonw.exe"), "-B", str(ROOT / "run_v2.py"),
-                   "--data-dir", str(self.data_dir)]
+        entry = ([sys.executable] if getattr(sys, "frozen", False) else
+                 [str(ROOT / ".venv/Scripts/pythonw.exe"), "-B", str(ROOT / "run_v2.py")])
+        command = entry + ["--data-dir", str(self.data_dir)]
         if self.isolated:
             command.append("--isolated")
         if show:

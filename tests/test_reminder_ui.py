@@ -33,18 +33,18 @@ def test_whole_composition_scales_and_controls_remain_inside(reminder, applicati
     reminder.show()
     application.processEvents()
     sizes = []
-    for height in (180, 280, 480):
+    for height in (180, 220, 280, 480):
         reminder.apply_settings(replace(reminder.settings, pet_height=height))
         application.processEvents()
         assert reminder.card.geometry().center().x() < reminder.character.geometry().center().x()
         assert reminder.card.y() < reminder.character.y()
         sizes.append((reminder.character.height(), reminder.card.width(), reminder.heading.font().pixelSize()))
         for widget in (reminder.close_button, reminder.water_button, reminder.kegel_button,
-                       reminder.snooze_button, reminder.history_button):
+                       reminder.snooze_button, reminder.record_button):
             assert reminder.card.rect().contains(widget.geometry())
             assert widget.fontMetrics().horizontalAdvance(widget.text()) <= widget.width()
         assert reminder.heading.fontMetrics().horizontalAdvance(reminder.heading.text()) <= reminder.heading.width()
-    assert all(sizes[0][i] < sizes[1][i] < sizes[2][i] for i in range(3))
+    assert all(sizes[0][i] < sizes[1][i] < sizes[2][i] < sizes[3][i] for i in range(3))
     for character, bubble, font in sizes:
         assert bubble / character == pytest.approx(274 / 280, abs=.01)
         assert font / character == pytest.approx(18 / 280, abs=.005)

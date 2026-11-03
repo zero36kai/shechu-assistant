@@ -10,7 +10,6 @@ from PySide6.QtWidgets import QWidget
 class CharacterView(QWidget):
     dragged = Signal(QPointF)
     drag_finished = Signal()
-    zoom_requested = Signal(int)
 
     def __init__(self, assets: Path, character="deepseek", parent=None):
         super().__init__(parent)
@@ -24,7 +23,7 @@ class CharacterView(QWidget):
         self.loaded_character = None
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setCursor(Qt.CursorShape.OpenHandCursor)
-        self.setToolTip("拖动角色移动提醒 · 滚轮调整大小")
+        self.setToolTip("拖动角色移动提醒 · 在面板中调整大小")
         self.timer = QTimer(self)
         self.timer.setTimerType(Qt.TimerType.PreciseTimer)
         self.timer.setInterval(33)
@@ -112,7 +111,3 @@ class CharacterView(QWidget):
             self.pointer = None
             self.setCursor(Qt.CursorShape.OpenHandCursor)
             self.drag_finished.emit()
-
-    def wheelEvent(self, event):
-        self.zoom_requested.emit(20 if event.angleDelta().y() > 0 else -20)
-        event.accept()

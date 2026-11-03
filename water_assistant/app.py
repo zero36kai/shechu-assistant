@@ -21,7 +21,8 @@ from .store import HistoryStore
 from .ui import Dashboard, ReminderWindow, app_icon
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent.parent
+ASSETS = Path(getattr(sys, "_MEIPASS", ROOT)) / "assets" / "v2"
 
 
 class Controller(QObject):
@@ -43,14 +44,12 @@ class Controller(QObject):
         self.character_session = None
         self.active_character = self.settings.character
         self.calendar = WorkdayCalendar(data_dir / "workdays.json", None if isolated else ROOT / "holiday_cache.json")
-        self.window = ReminderWindow(self.settings, ROOT / "assets" / "v2")
-        self.dashboard = Dashboard(self.settings, ROOT / "assets" / "v2", self.store)
+        self.window = ReminderWindow(self.settings, ASSETS)
+        self.dashboard = Dashboard(self.settings, ASSETS, self.store)
         self.window.dismissed.connect(self.dismiss)
         self.window.snoozed.connect(self.snooze)
         self.window.completed.connect(self.complete)
-        self.window.history_requested.connect(lambda: self.show_dashboard(1))
         self.window.geometry_saved.connect(self.save_position)
-        self.window.height_changed.connect(lambda value: self.update_settings(replace(self.settings, pet_height=value)))
         self.window.interacted.connect(self.cycle.interact)
         self.dashboard.reminder_requested.connect(lambda: self.show_reminder(manual=True))
         self.dashboard.pause_requested.connect(self.toggle_pause)
@@ -180,11 +179,11 @@ class Controller(QObject):
             else:
                 event_id, _ = self.store.complete(self.cycle.session_id, kind, now)
                 records[kind] = event_id
-                message = "喝水已记录，还可以做另一项。" if kind == "water" else "提肛已记录，还可以做另一项。"
+                message = "喝水已记录，可继续另一项" if kind == "water" else "提肛已记录，可继续另一项"
                 state = "water" if kind == "water" else "stretch"
             self.window.set_records(records)
             if len(records) == 2:
-                message = "已分别保存，可随时关闭。"
+                message = "两项已保存，点记录收起"
             self.window.show_feedback(message, state)
             logging.info("completion_changed session=%s kind=%s", self.cycle.session_id, kind)
         except (sqlite3.Error, OSError) as exc:

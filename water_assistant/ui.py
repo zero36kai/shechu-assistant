@@ -137,9 +137,7 @@ class ReminderWindow(QWidget):
     dismissed = Signal()
     snoozed = Signal()
     completed = Signal(str)
-    history_requested = Signal()
     geometry_saved = Signal(int, int, str)
-    height_changed = Signal(int)
     interacted = Signal()
 
     def __init__(self, settings, assets: Path):
@@ -154,7 +152,6 @@ class ReminderWindow(QWidget):
         self.character = CharacterView(assets, settings.character, self)
         self.character.dragged.connect(lambda delta: self.move(self.pos() + delta.toPoint()))
         self.character.drag_finished.connect(self.finish_move)
-        self.character.zoom_requested.connect(self.zoom)
         self.card = BubbleFrame(assets / "bubble.png", self)
         self.card.moved.connect(lambda delta: self.move(self.pos() + delta))
         self.card.finished.connect(self.finish_move)
@@ -167,17 +164,14 @@ class ReminderWindow(QWidget):
         self.feedback.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.water_button = button("喝好了", lambda: self.completed.emit("water"))
         self.kegel_button = button("提肛了", lambda: self.completed.emit("kegel"))
-        self.snooze_button = button("稍后", self.snoozed.emit, "quiet")
-        self.history_button = button("记录", self.history_requested.emit, "quiet")
+        self.record_button = button("记录", self.dismissed.emit, "record")
+        self.record_button.setToolTip("保留已点选的打卡并收起提醒")
+        self.snooze_button = button("稍后", self.snoozed.emit, "snooze")
         self.close_button = button("×", self.dismissed.emit, "close")
         self.close_button.setAccessibleName("关闭提醒")
         self.close_button.setToolTip("关闭提醒（Esc），不计为完成")
-        self.smaller = button("−", lambda: self.zoom(-20), "quiet")
-        self.larger = button("＋", lambda: self.zoom(20), "quiet")
-        self.smaller.setAccessibleName("缩小提醒")
-        self.larger.setAccessibleName("放大提醒")
         for widget in (self.water_button, self.kegel_button, self.snooze_button,
-                       self.history_button, self.close_button, self.smaller, self.larger):
+                       self.record_button, self.close_button):
             widget.setParent(self.card)
         self.water_button.setCheckable(True)
         self.kegel_button.setCheckable(True)
@@ -215,32 +209,25 @@ class ReminderWindow(QWidget):
         rect(self.card, 0, 0, 274, 178)
         rect(self.heading, 30, 26, 174, 25)
         rect(self.close_button, 217, 23, 26, 26)
-        rect(self.feedback, 30, 52, 212, 35)
-        rect(self.water_button, 30, 90, 99, 28)
-        rect(self.kegel_button, 136, 90, 99, 28)
-        rect(self.snooze_button, 28, 122, 77, 23)
-        rect(self.history_button, 107, 122, 48, 23)
-        rect(self.smaller, 177, 122, 26, 23)
-        rect(self.larger, 208, 122, 26, 23)
-        self.snooze_button.setText(f"{settings.snooze_minutes}分钟后")
+        rect(self.feedback, 30, 52, 212, 23)
+        rect(self.water_button, 30, 78, 99, 28)
+        rect(self.kegel_button, 136, 78, 99, 28)
+        rect(self.record_button, 30, 116, 99, 30)
+        rect(self.snooze_button, 136, 116, 99, 30)
+        self.snooze_button.setToolTip(f"收起提醒，{settings.snooze_minutes}分钟后再提醒")
         self.setStyleSheet(f"""
             QWidget {{ font-family: 'Microsoft YaHei UI'; color:#32536c; font-size:{16*scale:.2f}px; background:transparent; }}
             QPushButton {{ background:#e9f5fc; border:1px solid #abcce2; border-radius:{9*scale:.2f}px; padding:0; }}
             QPushButton:hover {{ background:#d5edfc; }}
             QPushButton:checked {{ background:#d9f0e4; border-color:#91baa3; color:#356249; }}
             QPushButton:focus {{ border:1px solid #537e9b; }}
-            QPushButton#quiet, QPushButton#close {{ background:transparent; border:none; }}
-            QPushButton#quiet:hover {{ background:#e5f1fa; }}
+            QPushButton#close {{ background:transparent; border:none; }}
             QPushButton#close {{ font-size:{25*scale:.2f}px; }}
             QPushButton#close:hover {{ background:#fbe8e9; color:#a43f49; }}
         """)
         self.heading.setStyleSheet(f"font-size:{18*scale:.2f}px;font-weight:600;background:transparent;")
         self.feedback.setStyleSheet(f"font-size:{14*scale:.2f}px;color:#647b8d;background:transparent;")
         self.ensure_visible()
-
-    def zoom(self, delta):
-        self.interacted.emit()
-        self.height_changed.emit(min(480, max(180, self.settings.pet_height + delta)))
 
     def ensure_visible(self, *_):
         screens = QApplication.screens()
@@ -481,7 +468,7 @@ class Dashboard(QWidget):
         actions.addWidget(button("放回右下角", self.reset_position_requested.emit))
         actions.addStretch()
         layout.addLayout(actions)
-        layout.addWidget(label("拖动角色即可移动提醒，滚轮或提醒上的 ＋ / − 可直接调整大小。", "small", True))
+        layout.addWidget(label("拖动角色即可移动提醒，大小统一通过上方滑块调整。", "small", True))
         layout.addStretch()
 
     def build_settings(self):
