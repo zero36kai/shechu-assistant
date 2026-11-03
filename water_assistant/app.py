@@ -10,7 +10,7 @@ from pathlib import Path
 import sqlite3
 import sys
 
-from PySide6.QtCore import QLockFile, QObject, QTimer
+from PySide6.QtCore import QLockFile, QObject, Qt, QTimer
 from PySide6.QtNetwork import QLocalServer, QLocalSocket
 from PySide6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 
@@ -105,12 +105,17 @@ class Controller(QObject):
 
     def tick(self):
         try:
-            eligible, self.last_reason = self.eligibility()
+            eligible, reason = self.eligibility()
+            if reason != self.last_reason:
+                logging.info("reminder_eligibility eligible=%s reason=%s remaining_seconds=%.0f",
+                             eligible, reason or "ready", self.cycle.remaining)
+            self.last_reason = reason
             action = self.cycle.tick(eligible)
             if action == "show":
                 self.display_cycle()
             elif action == "hide":
                 self.window.hide()
+                logging.info("reminder_hidden reason=%s", self.last_reason or "auto_hide")
             self.refresh_counter += 1
             if action or self.refresh_counter % 10 == 0:
                 self.refresh()
@@ -136,7 +141,7 @@ class Controller(QObject):
     def show_reminder(self, manual=False):
         if self.cycle.show(manual=manual):
             self.display_cycle()
-        elif not self.window.isVisible():
+        elif not self.window.isVisible() or self.window.isMinimized():
             self.display_cycle()
         self.refresh()
 
@@ -237,6 +242,7 @@ class Controller(QObject):
     def show_dashboard(self, page=0):
         self.dashboard.go(page if type(page) is int else 0)
         self.refresh()
+        self.dashboard.setWindowState(self.dashboard.windowState() & ~Qt.WindowState.WindowMinimized)
         self.dashboard.show()
         self.dashboard.raise_()
         self.dashboard.activateWindow()

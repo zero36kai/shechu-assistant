@@ -143,7 +143,7 @@ class ReminderWindow(QWidget):
     interacted = Signal()
 
     def __init__(self, settings, assets: Path):
-        super().__init__(None, Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
+        super().__init__(None, Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
         self.setWindowTitle("社畜小助手 · 提醒")
         self.setWindowIcon(app_icon())
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
@@ -275,7 +275,8 @@ class ReminderWindow(QWidget):
         self.place()
         self.character.set_state("wave")
         self.return_idle.start(1600)
-        self.show()
+        self.showNormal()
+        self.raise_()
 
     def set_records(self, records):
         self.records = dict(records)

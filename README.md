@@ -25,6 +25,7 @@ python -m venv .venv
 - 拖动角色移动提醒，滚轮或 `＋ / −` 调整大小。左上方气泡、文字和按钮与角色一起缩放，位置与大小会保存。
 - 「喝好了」「提肛了」分别记录喝水和提肛，同一轮可以先后完成两项。再次点击已完成项可以撤销。
 - 关闭、稍后和暂停不会生成完成记录。提醒可随时关闭，没有全屏遮罩。
+- 提醒不占用任务栏图标；再次弹出或手动唤出时会恢复显示。点击气泡里的「记录」打开历史页，面板最小化后也会恢复。
 - 历史页按实际完成日期显示明细；撤销保留痕迹，不计入完成次数。
 - 可设置提醒间隔、时段、工作日、稍后和自动收起时间。自动收起设为 0 时不自动收起，仍可随时关闭。
 - 锁屏、离开电脑、时段外或使用全屏应用时暂停自动计时。手动预览不受时段限制。
@@ -60,11 +61,12 @@ New-Item -ItemType Directory -Path .cache -Force | Out-Null
 
 ```powershell
 Remove-Item Env:QT_QPA_PLATFORM -ErrorAction SilentlyContinue
+.\.venv\Scripts\python.exe -B -m pytest tests/test_window_lifecycle.py -q --basetemp=.cache/window-first-run
 .\.venv\Scripts\python.exe -B -m tools.verify_runtime .cache/runtime-first-run
 .\.venv\Scripts\python.exe -B -m tools.verify_heartbeat .cache/heartbeat-first-run
 ```
 
-心跳测试在隔离实例中使用 1 秒间隔，生产间隔为 60 秒。验证覆盖单实例、独立打卡、撤销留痕、存储故障、关闭退出、整体缩放及气泡与全部角色帧的像素碰撞。短时测试不代表长期常驻稳定性；真实多屏混合 DPI 和所有锁屏、休眠组合仍需观察。
+心跳测试在隔离实例中使用 1 秒间隔，生产间隔为 60 秒。验证覆盖单实例、独立打卡、撤销留痕、存储故障、关闭退出、整体缩放及气泡与全部角色帧的像素碰撞。窗口专项测试还覆盖最小化后的自动提醒与记录页恢复，以及 Windows 原生任务栏样式。短时测试不代表长期常驻稳定性；真实多屏混合 DPI 和所有锁屏、休眠组合仍需观察。
 
 ## 许可与美术来源
 
