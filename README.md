@@ -69,5 +69,3 @@ Remove-Item Env:QT_QPA_PLATFORM -ErrorAction SilentlyContinue
 ## 许可与美术来源
 
 源码采用 [MIT](LICENSE)。角色美术、气泡及其预览的许可说明见 [assets/v2/NOTICE.md](assets/v2/NOTICE.md)，其中角色衍生素材沿用 **CC BY-NC-SA 4.0**，不适用 MIT。依赖库遵循各自许可证。
-
-动画和空白气泡通过生图 API 生成并加工为透明帧。八位社区角色的实际图生图参考来自蓝色大肥鱼档案馆，原作者、来源和修改说明见 NOTICE；它们并非相关公司官方形象。运行助手不需要生图 API 或密钥。所有动作均为有限帧动画；DeepSeek 饮水采用剔除瑕疵后的两帧短动作。
